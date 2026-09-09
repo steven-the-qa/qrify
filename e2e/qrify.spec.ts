@@ -1,5 +1,17 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import jsQR from "jsqr";
+
+/**
+ * Enable clipboard access for the current browser. Chromium takes a runtime
+ * permission grant; Firefox is opened with the clipboard prefs set in
+ * playwright.config.ts (`firefoxUserPrefs`), which is enough for text reads.
+ * WebKit has no automation hook for scripted clipboard reads at all.
+ */
+async function allowClipboard(context: BrowserContext, browserName: string) {
+  if (browserName === "chromium") {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  }
+}
 
 /** Read the on-screen QR canvas and decode it back to a string. */
 async function decodeQr(page: Page): Promise<string | null> {
@@ -27,8 +39,8 @@ test.describe("Qrify", () => {
   });
 
   test("renders a scannable QR for the default URL", async ({ page }) => {
-    await expect(page.getByLabel(/destination url/i)).toHaveValue("https://claude.ai/code");
-    await expect.poll(() => decodeQr(page)).toBe("https://claude.ai/code");
+    await expect(page.getByLabel(/destination url/i)).toHaveValue("https://example.com");
+    await expect.poll(() => decodeQr(page)).toBe("https://example.com");
   });
 
   test("updates the QR live as the URL changes", async ({ page }) => {
@@ -53,8 +65,11 @@ test.describe("Qrify", () => {
   });
 
   test("copies the link text to the clipboard", async ({ page, context, browserName }) => {
-    test.skip(browserName !== "chromium", "clipboard permissions are chromium-only in CI");
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    test.skip(
+      browserName === "webkit",
+      "WebKit has no way to read the clipboard from a script under automation",
+    );
+    await allowClipboard(context, browserName);
     await setUrl(page, "https://example.com/copied");
 
     await page.getByRole("button", { name: /copy link/i }).click();
@@ -65,8 +80,11 @@ test.describe("Qrify", () => {
   });
 
   test("copies the QR image and it decodes to the URL", async ({ page, context, browserName }) => {
-    test.skip(browserName !== "chromium", "clipboard image read is chromium-only");
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    test.skip(
+      browserName !== "chromium",
+      "async ClipboardItem image writes/reads only work headless in Chromium",
+    );
+    await allowClipboard(context, browserName);
     await setUrl(page, "https://example.com/as-image");
 
     await page.getByRole("button", { name: /copy qr image/i }).click();
@@ -114,7 +132,11 @@ test.describe("Qrify", () => {
     expect(tileBg).toBe("rgb(255, 255, 255)");
   });
 
-  test("is operable by keyboard", async ({ page }) => {
+  test("is operable by keyboard", async ({ page, browserName }) => {
+    test.skip(
+      browserName === "webkit",
+      "WebKit on macOS only tabs to buttons with Full Keyboard Access enabled",
+    );
     await page.getByLabel(/destination url/i).focus();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("button", { name: /copy qr image/i })).toBeFocused();

@@ -126,11 +126,17 @@ assert it equals the input.
 - Live update: change the URL twice, decode after each
 - Long URL with a query string round-trips
 - Cleared input → placeholder, no canvas, disabled copy button
-- Copy link round-trip via `navigator.clipboard.readText()` (chromium)
-- Copy image round-trip: read the PNG back off the clipboard, decode it (chromium)
+- Copy link round-trip via `navigator.clipboard.readText()` — chromium + firefox
+  (firefox needs the `firefoxUserPrefs` clipboard flags set in the config)
+- Copy image round-trip: read the PNG back off the clipboard, decode it — chromium
+  only (async `ClipboardItem` image r/w is not reachable headless elsewhere)
 - No horizontal overflow at 375 px
 - Dark mode: body background is the dark token, QR tile stays white
-- Keyboard: Tab order input → Copy image → Copy link, focus visible
+- Keyboard: Tab order input → Copy image → Copy link, focus visible (skipped on
+  WebKit, which only tabs to buttons with Full Keyboard Access on)
+
+Browser-specific clipboard skips are per-test with explicit reasons, not a blanket
+`chromium`-only guard — the "Copy link" feature is verified on two engines.
 
 ### CI (`.github/workflows/ci.yml`)
 

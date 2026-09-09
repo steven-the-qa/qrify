@@ -40,14 +40,14 @@ describe("Qrify app", () => {
   it("renders at rest with the default URL and a labelled QR image", async () => {
     render(<App />);
 
-    expect(getInput()).toHaveValue("https://claude.ai/code");
+    expect(getInput()).toHaveValue("https://example.com");
     expect(
-      screen.getByRole("img", { name: "QR code for https://claude.ai/code" }),
+      screen.getByRole("img", { name: "QR code for https://example.com" }),
     ).toBeInTheDocument();
     await waitFor(() =>
       expect(drawQrMock).toHaveBeenCalledWith(
         expect.any(HTMLCanvasElement),
-        "https://claude.ai/code",
+        "https://example.com",
       ),
     );
   });

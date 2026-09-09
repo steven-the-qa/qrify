@@ -14,7 +14,21 @@ export default defineConfig({
   },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "firefox", use: { ...devices["Desktop Firefox"] } },
+    {
+      name: "firefox",
+      use: {
+        ...devices["Desktop Firefox"],
+        // Firefox has no runtime clipboard-permission API, so opt in here:
+        // allow async clipboard reads and skip the paste-confirmation gate.
+        launchOptions: {
+          firefoxUserPrefs: {
+            "dom.events.asyncClipboard.readText": true,
+            "dom.events.asyncClipboard.clipboardItem": true,
+            "dom.events.testing.asyncClipboard": true,
+          },
+        },
+      },
+    },
     { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
   webServer: {

@@ -7,7 +7,7 @@ import { useDebouncedValue } from "./hooks/useDebouncedValue";
 import { normalizeUrl } from "./lib/qr";
 
 const DEBOUNCE_MS = 200;
-const DEFAULT_URL = "https://claude.ai/code";
+const DEFAULT_URL = "https://example.com";
 
 export function App() {
   const [url, setUrl] = useState(DEFAULT_URL);
@@ -40,20 +40,12 @@ export function App() {
 
       <div className="stage">
         <QrPreview value={encodable} canvasRef={canvasRef} onStatusChange={handleStatusChange} />
-        <span className="live">
-          <span className="dot" aria-hidden="true" /> Live preview &middot; nothing is uploaded
-        </span>
       </div>
 
       <div className="actions">
         <CopyImageButton canvasRef={canvasRef} disabled={!canCopy} />
         <CopyLinkButton value={trimmedLink} />
       </div>
-
-      <p className="note">
-        No account, no database. The QR code is built in your browser and embeds the URL
-        itself &mdash; once you copy it, it keeps working forever without Qrify.
-      </p>
     </main>
   );
 }

@@ -213,22 +213,6 @@ p.tile {
   margin: 0;
 }
 
-.live {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--ok);
-  animation: pulse 2s ease-in-out infinite;
-}
-
 .actions {
   display: flex;
   flex-direction: column;
@@ -297,28 +281,6 @@ button svg {
   height: 15px;
 }
 
-.note {
-  margin: 0;
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--muted);
-  text-align: center;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.35;
-    transform: scale(0.82);
-  }
-}
-
 @keyframes swap {
   from {
     opacity: 0.35;
@@ -335,7 +297,6 @@ button svg {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot,
   .tile canvas.swap {
     animation: none;
   }
