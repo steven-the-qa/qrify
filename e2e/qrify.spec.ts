@@ -133,9 +133,11 @@ test.describe("Qrify", () => {
   });
 
   test("is operable by keyboard", async ({ page, browserName }) => {
+    // macOS WebKit only tabs to buttons with Full Keyboard Access on; Linux
+    // WebKit (and CI) does not have that restriction, so only skip on darwin.
     test.skip(
-      browserName === "webkit",
-      "WebKit on macOS only tabs to buttons with Full Keyboard Access enabled",
+      browserName === "webkit" && process.platform === "darwin",
+      "macOS WebKit only tabs to buttons with Full Keyboard Access enabled",
     );
     await page.getByLabel(/destination url/i).focus();
     await page.keyboard.press("Tab");
