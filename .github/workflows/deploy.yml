@@ -27,10 +27,6 @@ jobs:
       - run: npm ci
       - run: npm run build
       - uses: actions/configure-pages@v5
-        with:
-          # Turn on Pages (with the GitHub Actions source) on first run,
-          # so no manual repo-settings step is needed.
-          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
