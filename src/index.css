@@ -94,6 +94,46 @@ body {
   gap: 24px;
 }
 
+/* Desktop: spread the card into two columns — controls on the left, the
+   QR preview held alongside them on the right. Small screens keep the
+   single-column stack above. */
+@media (min-width: 640px) {
+  #root {
+    padding: 56px 24px;
+  }
+
+  .card {
+    max-width: 700px;
+    padding: 40px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "header  preview"
+      "field   preview"
+      "actions preview";
+    align-items: start;
+    column-gap: 44px;
+    row-gap: 24px;
+  }
+
+  .card > header {
+    grid-area: header;
+  }
+
+  .card > .field-group {
+    grid-area: field;
+  }
+
+  .card > .stage {
+    grid-area: preview;
+    align-self: center;
+  }
+
+  .card > .actions {
+    grid-area: actions;
+  }
+}
+
 header {
   display: flex;
   flex-direction: column;

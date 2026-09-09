@@ -83,6 +83,12 @@ sit in one family. Full light + dark token sets; the QR tile stays white in both
 themes (inverted codes scan poorly). Motion is minimal and respects
 `prefers-reduced-motion`.
 
+**Layout** — below 640 px the card is a single ~428 px column (header → input →
+QR → buttons). At 640 px and up it becomes a ~700 px two-column grid: controls on
+the left, the QR preview held beside them on the right. The DOM order is
+unchanged, so tab order and the small-screen stacking order are identical — only
+`grid-template-areas` moves the preview.
+
 ## Test-suite spec
 
 ### Unit — `src/lib/qr.test.ts`
@@ -130,7 +136,8 @@ assert it equals the input.
   (firefox needs the `firefoxUserPrefs` clipboard flags set in the config)
 - Copy image round-trip: read the PNG back off the clipboard, decode it — chromium
   only (async `ClipboardItem` image r/w is not reachable headless elsewhere)
-- No horizontal overflow at 375 px
+- Narrow viewport (375 px): single column, QR below the input, no overflow
+- Wide viewport (1200 px): two columns, QR right of the input, no overflow
 - Dark mode: body background is the dark token, QR tile stays white
 - Keyboard: Tab order input → Copy image → Copy link, focus visible (skipped on
   WebKit, which only tabs to buttons with Full Keyboard Access on)

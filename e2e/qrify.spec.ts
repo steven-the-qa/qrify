@@ -113,12 +113,31 @@ test.describe("Qrify", () => {
     expect(result?.data).toBe("https://example.com/as-image");
   });
 
-  test("has no horizontal overflow on a narrow viewport", async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 });
-    const overflows = await page.evaluate(
+  async function hasHorizontalOverflow(page: Page) {
+    return page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
-    expect(overflows).toBe(false);
+  }
+
+  test("stacks in a single column with no overflow on a narrow viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    expect(await hasHorizontalOverflow(page)).toBe(false);
+
+    // QR sits below the input, not beside it.
+    const input = await page.getByLabel(/destination url/i).boundingBox();
+    const tile = await page.locator(".tile").boundingBox();
+    expect(tile!.y).toBeGreaterThan(input!.y + input!.height);
+  });
+
+  test("splits into two columns on a wide viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1200, height: 800 });
+    expect(await hasHorizontalOverflow(page)).toBe(false);
+
+    // QR sits to the right of the input, roughly level with it.
+    const input = await page.getByLabel(/destination url/i).boundingBox();
+    const tile = await page.locator(".tile").boundingBox();
+    expect(tile!.x).toBeGreaterThan(input!.x + input!.width);
+    expect(tile!.y).toBeLessThan(input!.y + input!.height);
   });
 
   test("keeps a white QR tile in dark mode", async ({ page }) => {
